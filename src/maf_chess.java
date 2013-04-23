@@ -36,6 +36,7 @@ public class maf_chess {
 				}
 				//System.out.print("Make a Move: ");
 			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
