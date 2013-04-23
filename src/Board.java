@@ -151,6 +151,14 @@ public class Board {
 						addScan(moves, new Square(i, x), 1, 1, false, 0);
 						break;
 					case 'n':	
+						addScan(moves, new Square(i, x), -2, -1, true, 0);
+						addScan(moves, new Square(i, x), -2, 1, true, 0);
+						addScan(moves, new Square(i, x), -1, -2, true, 0);
+						addScan(moves, new Square(i, x), 1, -2, true, 0);
+						addScan(moves, new Square(i, x), 2, -1, true, 0);
+						addScan(moves, new Square(i, x), 2, 1, true, 0);
+						addScan(moves, new Square(i, x), 1, 2, true, 0);
+						addScan(moves, new Square(i, x), -1, 2, true, 0);
 						break;
 					case 'r':	
 						addScan(moves, new Square(i, x), -1, 0, false, 0);
