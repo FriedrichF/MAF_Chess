@@ -30,6 +30,7 @@ public class Square {
 	}
 	
 	public String toString(){
-		return ""+chars[col]+row+6;
+		int column = 6-Integer.parseInt(""+row);
+		return ""+chars[col]+column;
 	}
 }

@@ -8,6 +8,9 @@ public class Board {
 	int moveNum;
 	char onMove;
 	char[][] table = new char[6][5];
+	private final int CAPTURE_ONLY = 1;
+	private final int NO_CAPTURE = 2;
+	private final int ALL_CAPTURE = 0;
 	
 	public Board(){
 		char[][] table1 = {{'k','q','b','n','r'},
@@ -108,81 +111,127 @@ public class Board {
 	public ArrayList<Move> legalMoves(){
 		ArrayList<Move> moves = new ArrayList<Move>();
 		char[][] figures = {{'k','q','b','n','r','p'},{'K','Q','B','N','R','P'}};
-		int player = 0;
+		boolean player = true;
 		
 		if(onMove == 'W'){
-			player = 1;
+			player = false;
 		}
 		
 		for(int i = 0; i < table.length; i++){
 			for(int x = 0; x < table[i].length; x++){
-				int index = Arrays.binarySearch(figures[player], table[i][x]);
-				if(index != figures[player].length){
-					char figure = figures[player][index];
-					switch(Character.toLowerCase(figure)){
-					case 'k':	
-						addScan(moves, new Square(i, x), -1, -1, true, 0);
-						addScan(moves, new Square(i, x), -1, 0, true, 0);
-						addScan(moves, new Square(i, x), -1, 1, true, 0);
-						addScan(moves, new Square(i, x), 0, -1, true, 0);
-						addScan(moves, new Square(i, x), 0, 1, true, 0);
-						addScan(moves, new Square(i, x), 1, -1, true, 0);
-						addScan(moves, new Square(i, x), 1, 0, true, 0);
-						addScan(moves, new Square(i, x), 1, 1, true, 0);
-						break;
-					case 'q':
-						addScan(moves, new Square(i, x), -1, -1, false, 0);
-						addScan(moves, new Square(i, x), -1, 0, false, 0);
-						addScan(moves, new Square(i, x), -1, 1, false, 0);
-						addScan(moves, new Square(i, x), 0, -1, false, 0);
-						addScan(moves, new Square(i, x), 0, 1, false, 0);
-						addScan(moves, new Square(i, x), 1, -1, false, 0);
-						addScan(moves, new Square(i, x), 1, 0, false, 0);
-						addScan(moves, new Square(i, x), 1, 1, false, 0);
-						break;
-					case 'b':	
-						addScan(moves, new Square(i, x), -1, -1, false, 0);
-						addScan(moves, new Square(i, x), -1, 0, true, 2);
-						addScan(moves, new Square(i, x), -1, 1, false, 0);
-						addScan(moves, new Square(i, x), 0, -1, true, 2);
-						addScan(moves, new Square(i, x), 0, 1, true, 2);
-						addScan(moves, new Square(i, x), 1, -1, false, 0);
-						addScan(moves, new Square(i, x), 1, 0, true, 2);
-						addScan(moves, new Square(i, x), 1, 1, false, 0);
-						break;
-					case 'n':	
-						addScan(moves, new Square(i, x), -2, -1, true, 0);
-						addScan(moves, new Square(i, x), -2, 1, true, 0);
-						addScan(moves, new Square(i, x), -1, -2, true, 0);
-						addScan(moves, new Square(i, x), 1, -2, true, 0);
-						addScan(moves, new Square(i, x), 2, -1, true, 0);
-						addScan(moves, new Square(i, x), 2, 1, true, 0);
-						addScan(moves, new Square(i, x), 1, 2, true, 0);
-						addScan(moves, new Square(i, x), -1, 2, true, 0);
-						break;
-					case 'r':	
-						addScan(moves, new Square(i, x), -1, 0, false, 0);
-						addScan(moves, new Square(i, x), 0, -1, false, 0);
-						addScan(moves, new Square(i, x), 0, 1, false, 0);
-						addScan(moves, new Square(i, x), 1, 0, false, 0);
-						break;
-					case 'p':	
-						addScan(moves, new Square(i, x), 1, -1, true, 1);
-						addScan(moves, new Square(i, x), 1, 0, true, 0);
-						addScan(moves, new Square(i, x), 1, 1, true, 1);
-						break;
+				if(Character.isLowerCase(table[i][x]) == player && table[i][x] != '.'){
+					switch(Character.toLowerCase(table[i][x])){
+						case 'k':	
+							addScan(moves, new Square(i, x), -1, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -1, 0, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -1, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 0, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 0, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 0, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 1, true, ALL_CAPTURE);
+							break;
+						case 'q':
+							addScan(moves, new Square(i, x), -1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -1, 0, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -1, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 0, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 0, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 0, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 1, false, ALL_CAPTURE);
+							break;
+						case 'b':	
+							addScan(moves, new Square(i, x), -1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -1, 0, true, NO_CAPTURE);
+							addScan(moves, new Square(i, x), -1, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 0, -1, true, NO_CAPTURE);
+							addScan(moves, new Square(i, x), 0, 1, true, NO_CAPTURE);
+							addScan(moves, new Square(i, x), 1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 0, true, NO_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 1, false, ALL_CAPTURE);
+							break;
+						case 'n':	
+							addScan(moves, new Square(i, x), -2, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -2, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -1, -2, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, -2, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 2, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 2, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 2, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), -1, 2, true, ALL_CAPTURE);
+							break;
+						case 'r':	
+							addScan(moves, new Square(i, x), -1, 0, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 0, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 0, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 0, false, ALL_CAPTURE);
+							break;
+						case 'p':	
+							addScan(moves, new Square(i, x), 1, -1, true, CAPTURE_ONLY);
+							addScan(moves, new Square(i, x), 1, 0, true, ALL_CAPTURE);
+							addScan(moves, new Square(i, x), 1, 1, true, CAPTURE_ONLY);
+							break;
 					}
 				}
 			}
 		}
 		
-		
-		
 		return moves;
 	}
 	
-	private void addScan(ArrayList<Move> moves, Square start, int dr, int dc, boolean oneStep, int captureMode){
-		
+	public void addScan(ArrayList<Move> moves, Square start, int dr, int dc,
+			boolean oneStep, int captureMode) {
+		System.out.println("Start scan");
+		Square next;
+		Move move; // the actual move from postition to next
+		char player = '.'; // Player at to-field or nobody
+		int i = 1; // zum Weiterschreiten in die Richtung
+		boolean run = true; // Stop after first Step if oneStep is set
+		try {
+			// generate the Move
+			while ((0 <= (start.col + i * dc) && (start.col + i * dc) < 5)
+					&& (0 <= (start.row + i * dr) && (start.row + i * dr) < 6)
+					&& run) {
+				next = new Square((start.col + dc * i), (start.row + dr * i));
+				System.out.println(next.toString());
+				move = new Move(start.toString() + "-" + next.toString());
+				// check to-field
+				char tofield = this.table[move.to.row][move.to.col];
+				if (tofield == '.') {
+					player = '0';
+				} else if (Character.isUpperCase(tofield)) {
+					player = 'W';
+				} else if (Character.isLowerCase(tofield)) {
+					player = 'B';
+				}
+				// move correct?
+				if (player != onMove) {
+					if (captureMode == 1 && player != '0') {
+						// captureOnly
+						moves.add(move);
+						run = false;
+					} else if (captureMode == 2 && player == '0') {
+						// noCapture
+						moves.add(move);
+					} else if (captureMode == 0) {
+						// doesnt matter
+						moves.add(move);
+						if(player != '0')
+							run = false;
+					}
+				}// end if player!= onMove
+				else{
+					run = false;
+				}
+				System.out.println("Ende einfügen");
+				if (oneStep)
+					run = false;
+				i++;
+			} // end while
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 	
 	public void move(Move _move){
@@ -198,4 +247,29 @@ public class Board {
 		table[_move.from.row][_move.from.col] = '.';
 	}
 	
+	public void legalMoveTest()
+	{
+		ArrayList<Move> alTest = legalMoves();
+		int i = 0;
+		for(Move test : alTest)
+		{
+			System.out.println(test.toString());
+			i++;
+		}
+		/*
+		Move mInput = null;
+		while (alTest.get(i) != null)
+		{
+			mInput = new Move("a6-a5");
+			if (mInput == alTest.get(i))
+			{
+				System.out.println(mInput.toString() + " is a legal move");
+			}
+			else
+			{
+				System.out.println(mInput.toString() + " is not legal");
+			}
+			i++;
+		}*/
+	}
 }

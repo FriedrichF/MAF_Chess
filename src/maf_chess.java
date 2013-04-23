@@ -11,7 +11,10 @@ public class maf_chess {
 		BufferedReader _br = new BufferedReader(new InputStreamReader(System.in));
 		String input = "";
 		System.out.println(_board.toString());
-
+		
+		_board.legalMoveTest();
+		
+		/*
 		try {
 			System.out.print("Make a Move: ");
 			while(!(input = _br.readLine()).equals("x")){
@@ -22,7 +25,7 @@ public class maf_chess {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		System.out.println("Bye!!");
 
 	}
