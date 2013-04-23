@@ -30,6 +30,6 @@ public class Square {
 	}
 	
 	public String toString(){
-		return ""+chars[col]+row;
+		return ""+chars[col]+row+6;
 	}
 }

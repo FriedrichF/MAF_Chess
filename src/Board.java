@@ -1,6 +1,8 @@
 /*Copyright Friedrich Fell 2013*/
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Board {
 	int moveNum;
@@ -58,7 +60,7 @@ public class Board {
 		
 		for (int r=0; r < table.length; r++)
 		{
-			for (int c=0; c < table[c].length; c++)
+			for (int c=0; c < table[r].length; c++)
 			{
 				table[r][c] = arrString[iCountSquare++].charAt(0);
 			}
@@ -78,7 +80,7 @@ public class Board {
 
     		for (int r=0; r < table.length; r++)
     		{
-    			for (int c=0; c < table[c].length; c++)
+    			for (int c=0; c < table[r].length; c++)
     			{
     				ps.print(" " + table[r][c]);
     			}
@@ -101,6 +103,78 @@ public class Board {
 			output += "\n";
 		}
 		return output;
+	}
+	
+	public ArrayList<Move> legalMoves(){
+		ArrayList<Move> moves = new ArrayList<Move>();
+		char[][] figures = {{'k','q','b','n','r','p'},{'K','Q','B','N','R','P'}};
+		int player = 0;
+		
+		if(onMove == 'W'){
+			player = 1;
+		}
+		
+		for(int i = 0; i < table.length; i++){
+			for(int x = 0; x < table[i].length; x++){
+				int index = Arrays.binarySearch(figures[player], table[i][x]);
+				if(index != figures[player].length){
+					char figure = figures[player][index];
+					switch(Character.toLowerCase(figure)){
+					case 'k':	
+						addScan(moves, new Square(i, x), -1, -1, true, 0);
+						addScan(moves, new Square(i, x), -1, 0, true, 0);
+						addScan(moves, new Square(i, x), -1, 1, true, 0);
+						addScan(moves, new Square(i, x), 0, -1, true, 0);
+						addScan(moves, new Square(i, x), 0, 1, true, 0);
+						addScan(moves, new Square(i, x), 1, -1, true, 0);
+						addScan(moves, new Square(i, x), 1, 0, true, 0);
+						addScan(moves, new Square(i, x), 1, 1, true, 0);
+						break;
+					case 'q':
+						addScan(moves, new Square(i, x), -1, -1, false, 0);
+						addScan(moves, new Square(i, x), -1, 0, false, 0);
+						addScan(moves, new Square(i, x), -1, 1, false, 0);
+						addScan(moves, new Square(i, x), 0, -1, false, 0);
+						addScan(moves, new Square(i, x), 0, 1, false, 0);
+						addScan(moves, new Square(i, x), 1, -1, false, 0);
+						addScan(moves, new Square(i, x), 1, 0, false, 0);
+						addScan(moves, new Square(i, x), 1, 1, false, 0);
+						break;
+					case 'b':	
+						addScan(moves, new Square(i, x), -1, -1, false, 0);
+						addScan(moves, new Square(i, x), -1, 0, true, 2);
+						addScan(moves, new Square(i, x), -1, 1, false, 0);
+						addScan(moves, new Square(i, x), 0, -1, true, 2);
+						addScan(moves, new Square(i, x), 0, 1, true, 2);
+						addScan(moves, new Square(i, x), 1, -1, false, 0);
+						addScan(moves, new Square(i, x), 1, 0, true, 2);
+						addScan(moves, new Square(i, x), 1, 1, false, 0);
+						break;
+					case 'n':	
+						break;
+					case 'r':	
+						addScan(moves, new Square(i, x), -1, 0, false, 0);
+						addScan(moves, new Square(i, x), 0, -1, false, 0);
+						addScan(moves, new Square(i, x), 0, 1, false, 0);
+						addScan(moves, new Square(i, x), 1, 0, false, 0);
+						break;
+					case 'p':	
+						addScan(moves, new Square(i, x), 1, -1, true, 1);
+						addScan(moves, new Square(i, x), 1, 0, true, 0);
+						addScan(moves, new Square(i, x), 1, 1, true, 1);
+						break;
+					}
+				}
+			}
+		}
+		
+		
+		
+		return moves;
+	}
+	
+	private void addScan(ArrayList<Move> moves, Square start, int dr, int dc, boolean oneStep, int captureMode){
+		
 	}
 	
 	public void move(Move _move){

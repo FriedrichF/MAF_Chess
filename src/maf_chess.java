@@ -11,8 +11,6 @@ public class maf_chess {
 		BufferedReader _br = new BufferedReader(new InputStreamReader(System.in));
 		String input = "";
 		System.out.println(_board.toString());
-		
-		//Board newBoard = new Board("12 B\nk q b n r \np p X p p \n. . . . . \n. . . . . \nP P P P P \nR N B Q K ");
 
 		try {
 			System.out.print("Make a Move: ");
