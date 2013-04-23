@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class Square {
 	public int col;
 	public int row;
-	private static char[] chars = {'a','b','c','d','e'};
+	private final static char[] chars = {'a','b','c','d','e'};
 	
 	//String Example c4
 	public Square(String inputMove) throws Exception{
