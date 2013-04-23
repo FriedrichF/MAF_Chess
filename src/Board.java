@@ -110,7 +110,6 @@ public class Board {
 	
 	public ArrayList<Move> legalMoves(){
 		ArrayList<Move> moves = new ArrayList<Move>();
-		char[][] figures = {{'k','q','b','n','r','p'},{'K','Q','B','N','R','P'}};
 		boolean player = true;
 		
 		if(onMove == 'W'){
@@ -122,56 +121,62 @@ public class Board {
 				if(Character.isLowerCase(table[i][x]) == player && table[i][x] != '.'){
 					switch(Character.toLowerCase(table[i][x])){
 						case 'k':	
-							addScan(moves, new Square(i, x), -1, -1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -1, 0, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -1, 1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 0, -1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 0, 1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, -1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 0, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, 0, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 0, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 0, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 0, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 1, true, ALL_CAPTURE);
 							break;
 						case 'q':
-							addScan(moves, new Square(i, x), -1, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -1, 0, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -1, 1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 0, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 0, 1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 0, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, 0, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 0, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 0, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 0, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 1, false, ALL_CAPTURE);
 							break;
 						case 'b':	
-							addScan(moves, new Square(i, x), -1, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -1, 0, true, NO_CAPTURE);
-							addScan(moves, new Square(i, x), -1, 1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 0, -1, true, NO_CAPTURE);
-							addScan(moves, new Square(i, x), 0, 1, true, NO_CAPTURE);
-							addScan(moves, new Square(i, x), 1, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 0, true, NO_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, 0, true, NO_CAPTURE);
+							addScan(moves, new Square(x, i), -1, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 0, -1, true, NO_CAPTURE);
+							addScan(moves, new Square(x, i), 0, 1, true, NO_CAPTURE);
+							addScan(moves, new Square(x, i), 1, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 0, true, NO_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 1, false, ALL_CAPTURE);
 							break;
 						case 'n':	
-							addScan(moves, new Square(i, x), -2, -1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -2, 1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -1, -2, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, -2, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 2, -1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 2, 1, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 2, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), -1, 2, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -2, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -2, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, -2, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, -2, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 2, -1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 2, 1, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 2, true, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), -1, 2, true, ALL_CAPTURE);
 							break;
-						case 'r':	
-							addScan(moves, new Square(i, x), -1, 0, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 0, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 0, 1, false, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 0, false, ALL_CAPTURE);
+						case 'r':
+							addScan(moves, new Square(x, i), -1, 0, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 0, -1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 0, 1, false, ALL_CAPTURE);
+							addScan(moves, new Square(x, i), 1, 0, false, ALL_CAPTURE);
 							break;
 						case 'p':	
-							addScan(moves, new Square(i, x), 1, -1, true, CAPTURE_ONLY);
-							addScan(moves, new Square(i, x), 1, 0, true, ALL_CAPTURE);
-							addScan(moves, new Square(i, x), 1, 1, true, CAPTURE_ONLY);
-							break;
+							if(onMove == 'W'){
+								addScan(moves, new Square(x, i), -1, -1, true, CAPTURE_ONLY);
+								addScan(moves, new Square(x, i), -1, 0, true, NO_CAPTURE);
+								addScan(moves, new Square(x, i), -1, 1, true, CAPTURE_ONLY);
+							}else{
+								addScan(moves, new Square(x, i), 1, -1, true, CAPTURE_ONLY);
+								addScan(moves, new Square(x, i), 1, 0, true, NO_CAPTURE);
+								addScan(moves, new Square(x, i), 1, 1, true, CAPTURE_ONLY);
+								break;
+							}
 					}
 				}
 			}
