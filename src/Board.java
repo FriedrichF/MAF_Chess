@@ -187,7 +187,7 @@ public class Board {
 	
 	public void addScan(ArrayList<Move> moves, Square start, int dr, int dc,
 			boolean oneStep, int captureMode) {
-		System.out.println("Start scan");
+		//System.out.println("Start scan");
 		Square next;
 		Move move; // the actual move from postition to next
 		char player = '.'; // Player at to-field or nobody
@@ -199,7 +199,7 @@ public class Board {
 					&& (0 <= (start.row + i * dr) && (start.row + i * dr) < 6)
 					&& run) {
 				next = new Square((start.col + dc * i), (start.row + dr * i));
-				System.out.println(next.toString());
+				//System.out.println(next.toString());
 				move = new Move(start.toString() + "-" + next.toString());
 				// check to-field
 				char tofield = this.table[move.to.row][move.to.col];
@@ -229,7 +229,7 @@ public class Board {
 				else{
 					run = false;
 				}
-				System.out.println("Ende einfügen");
+				//System.out.println("Ende einfügen");
 				if (oneStep)
 					run = false;
 				i++;
@@ -239,7 +239,27 @@ public class Board {
 		}
 	}
 	
-	public void move(Move _move){
+	public char move(Move _move){		
+		if(moveNum == 41){
+			return '=';
+		}
+		
+		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k'){
+			return onMove;
+		}
+		
+		if((_move.to.row == 5 || _move.to.row == 0) && Character.toLowerCase(table[_move.from.row][_move.from.col]) == 'p'){
+			if(Character.isLowerCase(table[_move.from.row][_move.from.col])){
+				table[_move.to.row][_move.to.col] = 'q';
+			}else{
+				table[_move.to.row][_move.to.col] = 'Q';
+			}
+		}else{
+			table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
+		}
+		table[_move.from.row][_move.from.col] = '.';
+		
+		
 		
 		if(onMove == 'B'){
 			onMove = 'W';
@@ -247,9 +267,13 @@ public class Board {
 			onMove = 'B';
 			moveNum++;
 		}
+		return '?';
+	}
+	
+	public Move randomPlayer(){
+		ArrayList<Move> alMoves = legalMoves();
 		
-		table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
-		table[_move.from.row][_move.from.col] = '.';
+		return alMoves.get((int)Math.round(Math.random() * (alMoves.size()-1)));
 	}
 	
 	public void legalMoveTest()
