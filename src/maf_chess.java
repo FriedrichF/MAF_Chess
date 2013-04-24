@@ -12,6 +12,8 @@ public class maf_chess
 {
 	public static void main(String[] args) 
 	{
+		
+		//TEST
 		//declare variables
 		FileInputStream fis = null;
 		BufferedReader brConsole = new BufferedReader(new InputStreamReader(System.in));
