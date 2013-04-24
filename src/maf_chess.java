@@ -12,7 +12,13 @@ public class maf_chess
 {
 	public static void main(String[] args) 
 	{
+		playIMCS();
 		
+		
+	}
+	
+	
+	public static void playLocal() {	
 		//TEST
 		//declare variables
 		FileInputStream fis = null;
@@ -163,7 +169,7 @@ public class maf_chess
 		{
 			e.printStackTrace();
 		}
-	}
+	}//end playLocal
 	
 	private static void saveGame(Board pBoard)
 	{
@@ -185,5 +191,65 @@ public class maf_chess
 		{
 			e.printStackTrace();
 		}
-	}
+	} //end saveGame
+	
+	private static void playIMCS () {
+		BufferedReader brConsole = new BufferedReader(new InputStreamReader(System.in));
+		String input;
+		String id;
+		char color;
+		char myColor;
+		Move myMove;
+		Move oppMove = new Move("a2-a3");//only thats not null
+		try {
+			Client connection = new Client ("imcs.svcs.cs.pdx.edu","3589","MAF_Chess","MAF_ChessWins");
+			
+			//Request Game id
+			System.out.print("Enter Game id: ");
+			id = brConsole.readLine();
+			//Request color
+			System.out.print("Choose a Color (B/W): ");
+			input = brConsole.readLine();
+			color = input.charAt(0);
+			//accept the Game
+			myColor = connection.accept(id, color);
+			
+			//create a local Board
+			Board oBoard = new Board();
+			System.out.println(oBoard.toString());
+			System.out.println("My Color: " + myColor);
+			System.out.println("------Game starts------");
+			
+			
+			if(myColor == 'B') {
+				oppMove = new Move(connection.getMove());
+				if (oppMove != null)
+					oBoard.move(oppMove);
+				System.out.println("Opponent moved: " + oBoard.toString());
+			}
+			
+			while (oppMove != null) {
+				//Generate Move and send
+				myMove = oBoard.heuristicPlayer();
+				oBoard.move(myMove);
+				
+				System.out.println("I moved: " + oBoard.toString());
+				System.out.println(oBoard.toString());
+				connection.sendMove("! " + myMove.toString());
+				
+				//Get Opponents Move and take the move at local board
+				oppMove = new Move(connection.getMove());
+				if (oppMove != null)
+					oBoard.move(oppMove);
+				System.out.println("Opponent moved: " + oBoard.toString());
+			}
+			
+			System.out.println("GAME IS OVER");
+			System.out.println(oBoard.toString());
+			
+		} catch(Exception e) {
+			
+		}
+		
+	}//end
 }
