@@ -295,10 +295,13 @@ public class Board {
 		int score[] = new int[moves.size()];
 		int scoreMax = 10000;
 		Board testboard = new Board(this);
+		char result = '?'; //check if player wins 
 		for (int i = 0; i < moves.size(); i++) {
 			testboard = new Board(this);
-			testboard.move(moves.get(i));
+			result = testboard.move(moves.get(i));
 			score[i] = testboard.getStateScore();
+			if (result == this.onMove)
+				score[i] = -10000;
 		} // end for
 		
 		//scoreMax bestimmen (kleinster Wert)
