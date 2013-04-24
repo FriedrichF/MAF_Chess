@@ -22,5 +22,12 @@ public class Move {
 		return ""+from+"-"+to;
 	}
 	
-	
+	@Override
+    public boolean equals (Object o) 
+	{
+		Move x = (Move) o;
+        if (x.toString().equals(this.toString())) 
+        	return true;
+        return false;
+    }
 }

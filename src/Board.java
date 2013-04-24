@@ -256,6 +256,11 @@ public class Board {
 		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k'){
 			table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
 			table[_move.from.row][_move.from.col] = '.';
+			if(onMove == 'B'){
+				onMove = 'W';
+			}else{
+				onMove = 'B';
+			}
 			return onMove;
 		}
 		
@@ -283,9 +288,6 @@ public class Board {
 	
 	public Move randomPlayer(){
 		ArrayList<Move> alMoves = legalMoves();
-		for(Move test : alMoves){
-			System.out.println(test.toString());
-		}
 		return alMoves.get((int)Math.round(Math.random() * (alMoves.size()-1)));
 	}
 	
@@ -295,15 +297,18 @@ public class Board {
 		int score[] = new int[moves.size()];
 		int scoreMax = 10000;
 		Board testboard = new Board(this);
+		
 		for (int i = 0; i < moves.size(); i++) {
 			testboard = new Board(this);
 			testboard.move(moves.get(i));
 			score[i] = testboard.getStateScore();
 		} // end for
+		
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] < scoreMax)
 				scoreMax = score[i];
 		} // end for
+		
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] == scoreMax)
 				bestMoves.add(moves.get(i));
@@ -358,5 +363,35 @@ public class Board {
 			}
 		}
 		return score;
+	}
+	
+	//random Player which choose a random move
+	public char randomMove()
+	{
+		char ret;
+		ret = this.move(randomPlayer());
+		System.out.println(this.toString());
+		
+		return ret;
+	}
+	
+	//human move if legal returns true
+	public char humanMove(Move pMove)
+	{
+		char ret;
+		ArrayList<Move> alLegalMoves = legalMoves();
+		
+		if (alLegalMoves.contains(pMove))
+		{
+			ret = this.move(pMove);
+			System.out.println(this.toString());
+			return ret;
+		}
+		else
+		{
+			System.out.println("No legal move");
+			ret = 'N';
+			return ret;
+		}
 	}
 }
