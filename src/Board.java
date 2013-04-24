@@ -245,6 +245,8 @@ public class Board {
 		}
 		
 		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k'){
+			table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
+			table[_move.from.row][_move.from.col] = '.';
 			return onMove;
 		}
 		
@@ -274,31 +276,5 @@ public class Board {
 		ArrayList<Move> alMoves = legalMoves();
 		
 		return alMoves.get((int)Math.round(Math.random() * (alMoves.size()-1)));
-	}
-	
-	public void legalMoveTest()
-	{
-		ArrayList<Move> alTest = legalMoves();
-		int i = 0;
-		for(Move test : alTest)
-		{
-			System.out.println(test.toString());
-			i++;
-		}
-		/*
-		Move mInput = null;
-		while (alTest.get(i) != null)
-		{
-			mInput = new Move("a6-a5");
-			if (mInput == alTest.get(i))
-			{
-				System.out.println(mInput.toString() + " is a legal move");
-			}
-			else
-			{
-				System.out.println(mInput.toString() + " is not legal");
-			}
-			i++;
-		}*/
 	}
 }

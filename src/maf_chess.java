@@ -2,10 +2,6 @@
 import java.io.*;
 
 public class maf_chess {
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		Board _board = new Board();
 		BufferedReader _br = new BufferedReader(new InputStreamReader(System.in));
@@ -17,20 +13,23 @@ public class maf_chess {
 		try {
 			//System.out.print("Make a Move: ");
 			while(!(input = _br.readLine()).equals("x")){
-				switch(_board.move(_board.randomPlayer())){
-				case '=': 
+				char moveReturn = _board.move(_board.randomPlayer());
+				if(moveReturn == '='){ 
 					System.out.println("DRAW!!");
 					System.out.println(_board.toString());
 					break;
-				case 'W':
+				}
+				else if(moveReturn == 'W'){
 					System.out.println("White WIN!");
 					System.out.println(_board.toString());
 					break;
-				case 'B':
+				}
+				else if(moveReturn == 'B'){
 					System.out.println("Black WIN!");
 					System.out.println(_board.toString());
 					break;
-				case '?':
+				}
+				else{ //(_board.move(_board.randomPlayer()) == '?')
 					System.out.println(_board.toString());
 					continue;
 				}
