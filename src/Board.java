@@ -256,11 +256,6 @@ public class Board {
 		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k'){
 			table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
 			table[_move.from.row][_move.from.col] = '.';
-			if(onMove == 'B'){
-				onMove = 'W';
-			}else{
-				onMove = 'B';
-			}
 			return onMove;
 		}
 		
@@ -297,18 +292,22 @@ public class Board {
 		int score[] = new int[moves.size()];
 		int scoreMax = 10000;
 		Board testboard = new Board(this);
-		
+		char result = '?'; //check if player wins 
 		for (int i = 0; i < moves.size(); i++) {
 			testboard = new Board(this);
-			testboard.move(moves.get(i));
+			result = testboard.move(moves.get(i));
 			score[i] = testboard.getStateScore();
+			if (result == this.onMove)
+				score[i] = -10000;
 		} // end for
-		
+
+		//scoreMax bestimmen (kleinster Wert)
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] < scoreMax)
 				scoreMax = score[i];
 		} // end for
-		
+
+		//best Moves adden
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] == scoreMax)
 				bestMoves.add(moves.get(i));
