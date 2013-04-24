@@ -143,7 +143,9 @@ public class maf_chess
 					System.out.print("Player: " + oBoard.onMove + "\npress any key for random move:");
 					input = brConsole.readLine();
 					if(oBoard.onMove == 'W'){
-						legalMove = oBoard.randomMove();
+						System.out.println("Heuristic Player:");
+						legalMove = oBoard.move(oBoard.heuristicPlayer());
+						System.out.println(oBoard.toString());
 					}else{
 						System.out.println("Heuristic Player:");
 						legalMove = oBoard.move(oBoard.heuristicPlayer());
