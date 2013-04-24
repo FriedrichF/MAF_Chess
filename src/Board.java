@@ -3,6 +3,8 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Board {
 	int moveNum;
@@ -11,6 +13,7 @@ public class Board {
 	private final int CAPTURE_ONLY = 1;
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
+	private final int NEGAMAX_DEPTH = 3;
 	
 	public Board(){
 		char[][] table1 = {{'k','q','b','n','r'},
@@ -107,7 +110,7 @@ public class Board {
 	}
 	
 	public String toString(){
-		String output = moveNum +" "+ onMove+"\n";
+		String output = moveNum +" "+ onMove+" Score: " + getStateScore()+"\n";
 		for(int i = 0; i < table.length; i++){
 			for(int x = 0; x < table[i].length; x++){
 				output += table[i][x]+" ";
@@ -391,6 +394,58 @@ public class Board {
 			System.out.println("No legal move");
 			ret = 'N';
 			return ret;
+		}
+	}
+	
+	public Move negamaxPlayer(){
+		ArrayList<Move> alLegalMoves = legalMoves();
+		HashMap<Move, Integer> mPossibleMoves = new HashMap<Move, Integer>();
+		HashMap<Move, Integer> mBestMoves = new HashMap<Move, Integer>();
+		int currentScore = 0;
+		
+		
+		for(Move currentMove : alLegalMoves){
+			if(currentMove != null){
+				currentScore = this.negamax(NEGAMAX_DEPTH, currentMove);
+				mPossibleMoves.put(currentMove, currentScore);
+			}
+		}
+		int score = 0;
+		for(Map.Entry<Move, Integer> mMove : mPossibleMoves.entrySet()){
+			if (mMove.getValue() == score)
+			{
+				mBestMoves.put(mMove.getKey(), mMove.getValue());
+			}else if (mMove.getValue() > score){
+				mBestMoves.clear();
+				mBestMoves.put(mMove.getKey(), mMove.getValue());
+				score = mMove.getValue();
+			}
+		}
+
+		return (Move) mBestMoves.keySet().toArray()[(int)Math.round(Math.random() * (mBestMoves.size()-1))];
+	}
+	
+	public int negamax(int depth, Move pMove){
+		if(depth <= 0 || gameOver(pMove)){
+			return this.getStateScore();
+		}
+		
+		Board bCopy = new Board(this);
+		bCopy.move(pMove);
+		ArrayList<Move> alLegalMoves = bCopy.legalMoves();
+		int currentScore = 0;
+		
+		for(Move currentMove : alLegalMoves){
+			currentScore = Math.max(currentScore, -this.negamax(depth-1, currentMove));
+		}
+		return currentScore;
+	}
+	
+	private boolean gameOver(Move _move){
+		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k' || moveNum == 41){
+			return true;
+		}else{
+			return false;
 		}
 	}
 }

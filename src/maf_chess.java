@@ -145,8 +145,8 @@ public class maf_chess
 						legalMove = oBoard.move(oBoard.heuristicPlayer());
 						System.out.println(oBoard.toString());
 					}else{
-						System.out.println("Heuristic Player:");
-						legalMove = oBoard.move(oBoard.heuristicPlayer());
+						System.out.println("Negamax Player:");
+						legalMove = oBoard.move(oBoard.negamaxPlayer());
 						System.out.println(oBoard.toString());
 					}
 				}
