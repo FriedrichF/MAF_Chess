@@ -25,7 +25,7 @@ public class Board {
 		table = table1;
 		
 		moveNum = 1;
-		onMove = 'B';
+		onMove = 'W';
 	}
 	
 	//constructor to copy a board
@@ -277,9 +277,9 @@ public class Board {
 		
 		if(onMove == 'B'){
 			onMove = 'W';
+			moveNum++;
 		}else{
 			onMove = 'B';
-			moveNum++;
 		}
 		return '?';
 	}
