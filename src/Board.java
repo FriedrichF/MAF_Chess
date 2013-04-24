@@ -300,10 +300,14 @@ public class Board {
 			testboard.move(moves.get(i));
 			score[i] = testboard.getStateScore();
 		} // end for
+		
+		//scoreMax bestimmen (kleinster Wert)
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] < scoreMax)
 				scoreMax = score[i];
 		} // end for
+		
+		//best Moves adden
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] == scoreMax)
 				bestMoves.add(moves.get(i));
@@ -313,7 +317,7 @@ public class Board {
 				* (bestMoves.size() - 1)));
 	} // end heuristicPlayer
 
-	private int getStateScore() {
+	public int getStateScore() {
 		int score = 0;
 		int value = 0;
 		for (int i = 0; i < table.length; i++) {

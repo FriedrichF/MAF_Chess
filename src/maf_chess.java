@@ -10,7 +10,15 @@ public class maf_chess {
 		System.out.println(_board.toString());
 		
 		
+		 Board _board2 = new Board("14 W . . . k . . . . . Q . . . . . . . . . . . . . P P . . . . K");
+		 System.out.println(_board2.toString());
+		 System.out.println(_board2.getStateScore());
+		 _board2.move(new Move("e5-d6"));
+		 System.out.println(_board2.toString());
+		 System.out.println(_board2.getStateScore());
 		
+		 
+		 
 		try {
 			//System.out.print("Make a Move: ");
 			while(!(input = _br.readLine()).equals("x")){
@@ -32,6 +40,7 @@ public class maf_chess {
 				}
 				else{ //(_board.move(_board.randomPlayer()) == '?')
 					System.out.println(_board.toString());
+					System.out.println("Score: " + _board.getStateScore());
 					continue;
 				}
 				//System.out.print("Make a Move: ");
