@@ -3,6 +3,7 @@ import java.io.*;
 
 public class maf_chess {
 	public static void main(String[] args) {
+		//Änderung!
 		Board _board = new Board();
 		BufferedReader _br = new BufferedReader(new InputStreamReader(System.in));
 		String input = "";
