@@ -13,7 +13,7 @@ public class maf_chess {
 		try {
 			//System.out.print("Make a Move: ");
 			while(!(input = _br.readLine()).equals("x")){
-				char moveReturn = _board.move(_board.randomPlayer());
+				char moveReturn = _board.move(_board.heuristicPlayer());
 				if(moveReturn == '='){ 
 					System.out.println("DRAW!!");
 					System.out.println(_board.toString());

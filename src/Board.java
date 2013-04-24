@@ -25,16 +25,25 @@ public class Board {
 		onMove = 'B';
 	}
 	
+	//constructor to copy a board
+	Board(Board in) {
+		for (int i = 0; i < in.table.length; i++)
+			for (int j = 0; j < table[i].length; j++)
+				this.table[i][j] = in.table[i][j];
+		this.moveNum = in.moveNum;
+		this.onMove = in.onMove;
+	}
+	
 	//constructor which initialize a board like the parameter string
 	//i.e. Board b = new Board("10 W Q Q Q Q Q Q Q Q Q Q - - - - - - - - - - Q Q Q Q Q Q Q Q Q Q");
-	Board(String strBoard)
+	public Board(String strBoard)
 	{
 		stringToBoard(strBoard);
 	}
 	
 	//constructor which initialize a board like the parameter InputStream
 	//i.e. read out a file
-	Board(InputStream isBoard)
+	public Board(InputStream isBoard)
 	{
 		try 
 		{
@@ -274,7 +283,80 @@ public class Board {
 	
 	public Move randomPlayer(){
 		ArrayList<Move> alMoves = legalMoves();
-		
+		for(Move test : alMoves){
+			System.out.println(test.toString());
+		}
 		return alMoves.get((int)Math.round(Math.random() * (alMoves.size()-1)));
+	}
+	
+	public Move heuristicPlayer() {
+		ArrayList<Move> moves = legalMoves();
+		ArrayList<Move> bestMoves = new ArrayList<Move>();
+		int score[] = new int[moves.size()];
+		int scoreMax = 10000;
+		Board testboard = new Board(this);
+		for (int i = 0; i < moves.size(); i++) {
+			testboard = new Board(this);
+			testboard.move(moves.get(i));
+			score[i] = testboard.getStateScore();
+		} // end for
+		for (int i = 0; i < score.length; i++) {
+			if (score[i] < scoreMax)
+				scoreMax = score[i];
+		} // end for
+		for (int i = 0; i < score.length; i++) {
+			if (score[i] == scoreMax)
+				bestMoves.add(moves.get(i));
+		}
+
+		return bestMoves.get((int) Math.round(Math.random()
+				* (bestMoves.size() - 1)));
+	} // end heuristicPlayer
+
+	private int getStateScore() {
+		int score = 0;
+		int value = 0;
+		for (int i = 0; i < table.length; i++) {
+			for (int j = 0; j < table[i].length; j++) {
+				if (table[i][j] != '.') {
+					switch (Character.toLowerCase(table[i][j])) {
+					case 'k':
+						value = 10000;
+						break;
+					case 'q':
+						value = 100;
+						break;
+					case 'b':
+						value = 30;
+						break;
+					case 'n':
+						value = 30;
+						break;
+					case 'r':
+						value = 50;
+						break;
+					case 'p':
+						value = 10;
+						break;
+					} // end switch
+					if (onMove == 'B') {
+						// Black on Move
+						if (Character.isLowerCase(table[i][j])) {
+							score += value;
+						} else {
+							score -= value;
+						}
+					} else {
+						// White on Move
+						if (Character.isLowerCase(table[i][j])) {
+							score -= value;
+						} else {
+							score += value;
+						}
+					}// end if else
+				}// end if != '.'
+			}
+		}
+		return score;
 	}
 }
