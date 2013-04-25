@@ -10,16 +10,37 @@ import java.io.ObjectOutputStream;
 
 public class maf_chess 
 {
-	public static void main(String[] args) 
-	{
-		playIMCS();
-		
-		
+	public static void main(String[] args) {
+		boolean inputError = false;
+		char input2 = 0;
+		do {
+			inputError = false;
+			System.out.println("Welcome to MAF_Chess");
+			System.out.println("Select mode:");
+			System.out.println("0 - play on the local Server");
+			System.out.println("1 - play on IMCS");
+			BufferedReader brConsole = new BufferedReader(
+					new InputStreamReader(System.in));
+			try {
+				input2 = brConsole.readLine().charAt(0);
+				//input2 = input.charAt(0);
+			} catch (Exception e) {
+				System.out.println("Wrong Input!");
+				inputError = true;
+			}
+
+			if (input2 != '0' && input2 != '1')
+				inputError = true;
+		} while (inputError);
+
+		if (input2 == '0')
+			playLocal();
+		else if (input2 == '1')
+			playIMCS();
+
 	}
-	
-	
+
 	public static void playLocal() {	
-		//TEST
 		//declare variables
 		FileInputStream fis = null;
 		BufferedReader brConsole = new BufferedReader(new InputStreamReader(System.in));
@@ -193,63 +214,188 @@ public class maf_chess
 		}
 	} //end saveGame
 	
-	private static void playIMCS () {
+	private static void playIMCS() {
 		BufferedReader brConsole = new BufferedReader(new InputStreamReader(System.in));
-		String input;
-		String id;
-		char color;
-		char myColor;
-		Move myMove;
-		Move oppMove = new Move("a2-a3");//only thats not null
+		char inputChar = ' ';
+		String id = "";
+		char color = '?';
+		char myColor = 'W';
+		Move myMove = new Move("a2-a3");// only thats not null
+		Move oppMove = new Move("a2-a3");// only thats not null
+		Client connection;
+		boolean inputError = false;
+		char player = '0';
+
 		try {
-			Client connection = new Client ("imcs.svcs.cs.pdx.edu","3589","MAF_Chess","MAF_ChessWins");
-			
-			//Request Game id
-			System.out.print("Enter Game id: ");
-			id = brConsole.readLine();
-			//Request color
-			System.out.print("Choose a Color (B/W): ");
-			input = brConsole.readLine();
-			color = input.charAt(0);
-			//accept the Game
-			myColor = connection.accept(id, color);
-			
-			//create a local Board
-			Board oBoard = new Board();
-			System.out.println(oBoard.toString());
-			System.out.println("My Color: " + myColor);
-			System.out.println("------Game starts------");
-			
-			
-			if(myColor == 'B') {
-				oppMove = new Move(connection.getMove());
-				if (oppMove != null)
-					oBoard.move(oppMove);
-				System.out.println("Opponent moved: " + oBoard.toString());
-			}
-			
-			while (oppMove != null) {
-				//Generate Move and send
-				myMove = oBoard.heuristicPlayer();
-				oBoard.move(myMove);
-				
-				System.out.println("I moved: " + oBoard.toString());
-				System.out.println(oBoard.toString());
-				connection.sendMove("! " + myMove.toString());
-				
-				//Get Opponents Move and take the move at local board
-				oppMove = new Move(connection.getMove());
-				if (oppMove != null)
-					oBoard.move(oppMove);
-				System.out.println("Opponent moved: " + oBoard.toString());
-			}
-			
-			System.out.println("GAME IS OVER");
-			System.out.println(oBoard.toString());
-			
-		} catch(Exception e) {
-			
+			connection = new Client("imcs.svcs.cs.pdx.edu", "3589","MAF_Chess", "MAF_ChessWins");
+		} catch (Exception e) {
+			return;
 		}
-		
-	}//end
+
+		// choose player
+		do {
+			inputError = false;
+			System.out.println("----choose player----");
+			System.out.println("0 - randomPlayer");
+			System.out.println("1 - heuristicPlayer");
+			System.out.println("2 - negamaxPlayer");
+			System.out.println("3 - ");
+			System.out.println("4 - ");
+			System.out.println("5 - ");
+
+			try {
+				player = brConsole.readLine().charAt(0);
+			} catch (Exception e) {
+				System.out.println("Wrong Input!");
+				inputError = true;
+			}
+			// check if input is correct
+			if (!(player >= '0' && player <= '5'))
+				inputError = true;
+		} while (inputError);
+
+		// offer or accept a game
+		do {
+			inputError = false;
+			System.out.println("Play on IMCS");
+			System.out.println("Select mode:");
+			System.out.println("0 - accept a game");
+			System.out.println("1 - offer a game");
+			// BufferedReader brConsole = new BufferedReader(
+			// new InputStreamReader(System.in));
+			try {
+				inputChar = brConsole.readLine().charAt(0);
+			} catch (Exception e) {
+				System.out.println("Wrong Input!");
+				inputError = true;
+			}
+			// check if input is correct
+			if (inputChar != '0' && inputChar != '1')
+				inputError = true;
+		} while (inputError);
+
+		// accept a game
+		if (inputChar == '0') {
+			do {
+				inputError = false;
+				System.out.println("----Accept a game----");
+				try {
+					System.out.print("Enter Game id: ");
+					id = brConsole.readLine();
+					System.out.print("Choose a Color (B/W/?): ");
+					color = brConsole.readLine().charAt(0);
+				} catch (Exception e) {
+					System.out.println("Wrong input");
+					inputError = true;
+				}
+				// accept the Game
+				try {
+					myColor = connection.accept(id, color);
+				} catch (Exception e) {
+					// System.out.print("Error: ");
+					// System.out.println(e);
+					inputError = true;
+				}
+			} while (inputError);
+
+			// offer a game
+		} else if (inputChar == '1') {
+			do {
+				inputError = false;
+				System.out.println("----Offer a Game----");
+				try {
+					System.out.print("Choose a Color (B/W/?): ");
+					color = brConsole.readLine().charAt(0);
+				} catch (Exception e) {
+					System.out.println("Wrong input!");
+					inputError = true;
+				}
+				// offer the Game
+				try {
+					myColor = connection.offer(color);
+				} catch (Exception e) {
+					// System.out.print("Error: ");
+					// System.out.println(e);
+					inputError = true;
+				}
+			} while (inputError);
+
+		}
+
+		// create a local Board
+		Board oBoard = new Board();
+		oBoard.onMove = 'W';
+		System.out.println(oBoard.toString());
+		System.out.println("My Color: " + myColor);
+		System.out.println("------Game starts------");
+
+		if (myColor == 'B') {
+			try {
+				String test = connection.getMove();
+				System.out.println("I get: " + test);
+				oppMove = new Move(test);
+				if (oppMove != null)
+					oBoard.move(oppMove);
+				// System.out.println("Opponent moved: " + oBoard.toString());
+			} catch (Exception e) {
+
+			}
+		}
+
+		while (oppMove != null) {
+
+			// my turn
+			do {
+				inputError = false;
+				try {
+					// select Player and get Move
+					switch (player) {
+					case '0':
+						myMove = oBoard.randomPlayer();
+						break;
+					case '1':
+						myMove = oBoard.heuristicPlayer();
+						break;
+					case '2':
+						myMove = oBoard.negamaxPlayer();
+						break;
+					case '3':
+						break;
+					case '4':
+						break;
+					case '5':
+						break;
+					default:
+						myMove = oBoard.heuristicPlayer();
+						break;
+					}// end switch
+					connection.sendMove("! " + myMove.toString());
+				} catch (Exception e) {
+					inputError = true;
+				}
+			} while (inputError);
+			oBoard.move(myMove);
+			System.out.println("I moved: " + oBoard.toString());
+
+			// opponents turn
+			// Get Opponents Move and take the move at local board
+			do {
+				inputError = false;
+				try {
+					oppMove = new Move(connection.getMove());
+				} catch (Exception e) {
+					inputError = true;
+				}
+			} while (inputError);
+
+			if (oppMove != null)
+				oBoard.move(oppMove);
+			System.out.println("Opponent moved: " + oBoard.toString());
+		}
+
+		System.out.println("GAME IS OVER");
+		System.out.println(oBoard.toString());
+
+	}// end playIMCS
+	
 }
