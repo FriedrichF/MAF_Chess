@@ -3,6 +3,8 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Board {
 	int moveNum;
@@ -11,6 +13,9 @@ public class Board {
 	private final int CAPTURE_ONLY = 1;
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
+	private final int NEGAMAX_DEPTH = 4;
+	private final long ITERATIVE_TIMEOUT = 5;
+	int depthCounter = 0;
 	
 	public Board(){
 		char[][] table1 = {{'k','q','b','n','r'},
@@ -22,7 +27,7 @@ public class Board {
 		table = table1;
 		
 		moveNum = 1;
-		onMove = 'B';
+		onMove = 'W';
 	}
 	
 	//constructor to copy a board
@@ -107,7 +112,7 @@ public class Board {
 	}
 	
 	public String toString(){
-		String output = moveNum +" "+ onMove+"\n";
+		String output = moveNum +" "+ onMove+" Score: " + getStateScore()+"\n";
 		for(int i = 0; i < table.length; i++){
 			for(int x = 0; x < table[i].length; x++){
 				output += table[i][x]+" ";
@@ -204,10 +209,10 @@ public class Board {
 		boolean run = true; // Stop after first Step if oneStep is set
 		try {
 			// generate the Move
-			while ((0 <= (start.col + i * dc) && (start.col + i * dc) < 5)
-					&& (0 <= (start.row + i * dr) && (start.row + i * dr) < 6)
+			while ((0 <= (start.col + (i * dc)) && (start.col + (i * dc)) < 5)
+					&& (0 <= (start.row + (i * dr)) && (start.row + (i * dr)) < 6)
 					&& run) {
-				next = new Square((start.col + dc * i), (start.row + dr * i));
+				next = new Square((start.col + (dc * i)), (start.row + (dr * i)));
 				//System.out.println(next.toString());
 				move = new Move(start.toString() + "-" + next.toString());
 				// check to-field
@@ -256,7 +261,13 @@ public class Board {
 		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k'){
 			table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
 			table[_move.from.row][_move.from.col] = '.';
-			return onMove;
+			char winner = onMove;
+			if(onMove == 'B'){
+				onMove = 'W';
+			}else{
+				onMove = 'B';
+			}
+			return winner;
 		}
 		
 		if((_move.to.row == 5 || _move.to.row == 0) && Character.toLowerCase(table[_move.from.row][_move.from.col]) == 'p'){
@@ -274,18 +285,15 @@ public class Board {
 		
 		if(onMove == 'B'){
 			onMove = 'W';
+			moveNum++;
 		}else{
 			onMove = 'B';
-			moveNum++;
 		}
 		return '?';
 	}
 	
 	public Move randomPlayer(){
 		ArrayList<Move> alMoves = legalMoves();
-		for(Move test : alMoves){
-			System.out.println(test.toString());
-		}
 		return alMoves.get((int)Math.round(Math.random() * (alMoves.size()-1)));
 	}
 	
@@ -303,13 +311,13 @@ public class Board {
 			if (result == this.onMove)
 				score[i] = -10000;
 		} // end for
-		
+
 		//scoreMax bestimmen (kleinster Wert)
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] < scoreMax)
 				scoreMax = score[i];
 		} // end for
-		
+
 		//best Moves adden
 		for (int i = 0; i < score.length; i++) {
 			if (score[i] == scoreMax)
@@ -320,7 +328,7 @@ public class Board {
 				* (bestMoves.size() - 1)));
 	} // end heuristicPlayer
 
-	public int getStateScore() {
+	private int getStateScore() {
 		int score = 0;
 		int value = 0;
 		for (int i = 0; i < table.length; i++) {
@@ -365,5 +373,207 @@ public class Board {
 			}
 		}
 		return score;
+	}
+
+	//random Player which choose a random move
+	public char randomMove()
+	{
+		char ret;
+		ret = this.move(randomPlayer());
+		System.out.println(this.toString());
+		
+		return ret;
+	}
+	
+	//human move if legal returns true
+	public char humanMove(Move pMove)
+	{
+		char ret;
+		ArrayList<Move> alLegalMoves = legalMoves();
+		
+		if (alLegalMoves.contains(pMove))
+		{
+			ret = this.move(pMove);
+			System.out.println(this.toString());
+			return ret;
+		}
+		else
+		{
+			System.out.println("No legal move");
+			ret = 'N';
+			return ret;
+		}
+	}
+	
+	public Move negamaxPlayer(){
+		ArrayList<Move> alLegalMoves = legalMoves();
+		ArrayList<Move> aBestMoves = new ArrayList<Move>();
+		int maxScore = 10000;
+		
+		for(Move currentMove : alLegalMoves){
+			if(currentMove != null){
+				Board copyBoard = new Board(this);
+				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
+					return currentMove;
+				}
+				int currentScore = negamaxB(NEGAMAX_DEPTH, copyBoard);
+				if (currentScore == maxScore)
+				{
+					aBestMoves.add(currentMove);
+				}else if (currentScore < maxScore){
+					aBestMoves.clear();
+					aBestMoves.add(currentMove);
+					maxScore = currentScore;
+				}
+			}
+		}
+
+		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
+	}
+	
+	public Move negamaxPrunePlayer(){
+		ArrayList<Move> alLegalMoves = legalMoves();
+		ArrayList<Move> aBestMoves = new ArrayList<Move>();
+		int alpha = -10000;
+		int beta = 10000;
+		
+		
+		for(Move currentMove : alLegalMoves){
+			if(currentMove != null){
+				Board copyBoard = new Board(this);
+				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
+					return currentMove;
+				}
+				int currentScore = negamaxPrune(NEGAMAX_DEPTH, copyBoard, -beta, -alpha);
+				
+				if (currentScore == alpha)
+				{
+					aBestMoves.add(currentMove);
+				}else if (currentScore > alpha)
+				{
+					alpha = currentScore;
+					aBestMoves.clear();
+					aBestMoves.add(currentMove);
+				}
+			}
+		}
+
+		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
+	}
+	
+	public Move negamaxPlayerTime(){
+		ArrayList<Move> alLegalMoves = legalMoves();
+		ArrayList<Move> aBestMoves = new ArrayList<Move>();
+		int maxScore = 10000;
+		long startTime = System.currentTimeMillis();
+		
+		for(Move currentMove : alLegalMoves){
+			if(currentMove != null){
+				Board copyBoard = new Board(this);
+				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
+					return currentMove;
+				}
+				depthCounter = 0;
+				int currentScore = negamaxB(copyBoard, startTime);
+				System.out.println("Depth: "+depthCounter);
+				if (currentScore == maxScore)
+				{
+					aBestMoves.add(currentMove);
+				}else if (currentScore < maxScore){
+					aBestMoves.clear();
+					aBestMoves.add(currentMove);
+					maxScore = currentScore;
+				}
+			}
+		}
+
+		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
+	}
+	
+	public int negamaxB(Board board, long startTime){
+		depthCounter++;
+		if((System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+			return board.getStateScore();
+		}
+		
+		ArrayList<Move> alLegalMoves = board.legalMoves();
+		int score = 10000;
+		for(Move currentMove : alLegalMoves){
+			Board newBoard = new Board(board);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = negamaxB(newBoard, startTime);
+			}else{
+				s = -10000;
+			}
+			//
+			score = Math.min(score, s);
+		}
+		return -score;
+	}
+	
+	public int negamaxB(int depth, Board board){
+		if(depth <= 0){
+			return board.getStateScore();
+		}
+		
+		ArrayList<Move> alLegalMoves = board.legalMoves();
+		int score = 10000;
+		for(Move currentMove : alLegalMoves){
+			Board newBoard = new Board(board);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = negamaxB(depth-1, newBoard);
+			}else{
+				s = -10000;
+			}
+			
+			score = Math.min(score, s);
+		}
+		return -score;
+	}
+	
+	public int negamaxPrune(int depth, Board board,int alpha, int beta){
+		if(depth <= 0){
+			return board.getStateScore();
+		}
+		
+		ArrayList<Move> alLegalMoves = board.legalMoves();
+		int score = 10000;
+		for(Move currentMove : alLegalMoves){
+			Board newBoard = new Board(board);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = negamaxPrune(depth-1, newBoard, -beta, -alpha);
+			}else{
+				s = -10000;
+			}
+			
+			score = Math.min(score, s);
+			
+			if(score <= beta){
+				return score;
+			}
+			if(score > alpha){
+				alpha = score;
+			}
+			
+		}
+		return alpha;
 	}
 }
