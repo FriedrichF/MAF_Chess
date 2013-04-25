@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 // Copyright © 2013 MAF 
 
@@ -12,11 +13,28 @@ public class maf_chess
 {
 	public static void main(String[] args) 
 	{
-		playIMCS();
-		
+		//playIMCS();
+		//playLocal();
+		test();
 		
 	}
 	
+	public static void test(){
+		Board b = new Board(
+				"10 B " +
+				". . . . . " +
+				". . . . . " +
+				". . r . . " +
+				". . . . . " +
+				". . q . . " +
+				". . . . .");
+		ArrayList<Move> moveList = b.legalMoves();
+		for(Move move : moveList){
+			System.out.print(move.toString()+"|");
+		}
+		System.out.print("\n");
+		System.out.println(b.toString());
+	}
 	
 	public static void playLocal() {	
 		//TEST

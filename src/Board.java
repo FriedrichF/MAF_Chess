@@ -13,7 +13,7 @@ public class Board {
 	private final int CAPTURE_ONLY = 1;
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
-	private final int NEGAMAX_DEPTH = 3;
+	private final int NEGAMAX_DEPTH = 4;
 	
 	public Board(){
 		char[][] table1 = {{'k','q','b','n','r'},
@@ -207,10 +207,10 @@ public class Board {
 		boolean run = true; // Stop after first Step if oneStep is set
 		try {
 			// generate the Move
-			while ((0 <= (start.col + i * dc) && (start.col + i * dc) < 5)
-					&& (0 <= (start.row + i * dr) && (start.row + i * dr) < 6)
+			while ((0 <= (start.col + (i * dc)) && (start.col + (i * dc)) < 5)
+					&& (0 <= (start.row + (i * dr)) && (start.row + (i * dr)) < 6)
 					&& run) {
-				next = new Square((start.col + dc * i), (start.row + dr * i));
+				next = new Square((start.col + (dc * i)), (start.row + (dr * i)));
 				//System.out.println(next.toString());
 				move = new Move(start.toString() + "-" + next.toString());
 				// check to-field
@@ -259,7 +259,13 @@ public class Board {
 		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k'){
 			table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
 			table[_move.from.row][_move.from.col] = '.';
-			return onMove;
+			char winner = onMove;
+//			if(onMove == 'B'){
+//				onMove = 'W';
+//			}else{
+//				onMove = 'B';
+//			}
+			return winner;
 		}
 		
 		if((_move.to.row == 5 || _move.to.row == 0) && Character.toLowerCase(table[_move.from.row][_move.from.col]) == 'p'){
@@ -399,50 +405,73 @@ public class Board {
 	
 	public Move negamaxPlayer(){
 		ArrayList<Move> alLegalMoves = legalMoves();
-		HashMap<Move, Integer> mPossibleMoves = new HashMap<Move, Integer>();
-		HashMap<Move, Integer> mBestMoves = new HashMap<Move, Integer>();
-		int currentScore = 0;
-		
+		ArrayList<Move> aBestMoves = new ArrayList<Move>();
+		int maxScore = -10000;
 		
 		for(Move currentMove : alLegalMoves){
 			if(currentMove != null){
-				currentScore = this.negamax(NEGAMAX_DEPTH, currentMove);
-				mPossibleMoves.put(currentMove, currentScore);
-			}
-		}
-		int score = 0;
-		for(Map.Entry<Move, Integer> mMove : mPossibleMoves.entrySet()){
-			if (mMove.getValue() == score)
-			{
-				mBestMoves.put(mMove.getKey(), mMove.getValue());
-			}else if (mMove.getValue() > score){
-				mBestMoves.clear();
-				mBestMoves.put(mMove.getKey(), mMove.getValue());
-				score = mMove.getValue();
+				//currentScore = this.negamax(NEGAMAX_DEPTH, currentMove);
+				int currentScore = this.negamaxB(NEGAMAX_DEPTH);
+				if (currentScore == maxScore)
+				{
+					aBestMoves.add(currentMove);
+				}else if (currentScore > maxScore){
+					aBestMoves.clear();
+					aBestMoves.add(currentMove);
+					maxScore = currentScore;
+				}
 			}
 		}
 
-		return (Move) mBestMoves.keySet().toArray()[(int)Math.round(Math.random() * (mBestMoves.size()-1))];
+		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
 	}
 	
-	public int negamax(int depth, Move pMove){
-		if(depth <= 0 || gameOver(pMove)){
+	public int negamaxB(int depth){
+		if(depth <= 0){
 			return this.getStateScore();
 		}
 		
+		ArrayList<Move> alLegalMoves = this.legalMoves();
+		int score = 10000;
+		for(Move currentMove : alLegalMoves){
+			Board newBoard = new Board(this);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = newBoard.negamaxB(depth-1);
+			}else{
+				s = -10000;
+			}
+			
+			score = Math.min(score, s);
+		}
+		return -score;
+	}
+	
+	public int negamax(int depth, Move pMove){
 		Board bCopy = new Board(this);
-		bCopy.move(pMove);
+		char moveReturn = bCopy.move(pMove);
+		
+		if(depth <= 0 || bCopy.gameOver(moveReturn)){
+			
+			return bCopy.getStateScore();
+		}
+		
 		ArrayList<Move> alLegalMoves = bCopy.legalMoves();
-		int currentScore = 0;
+		int currentScore = -1000;
 		
 		for(Move currentMove : alLegalMoves){
-			currentScore = Math.max(currentScore, -this.negamax(depth-1, currentMove));
+			currentScore = Math.max(currentScore, -bCopy.negamax(depth-1, currentMove));
 		}
 		return currentScore;
 	}
 	
-	private boolean gameOver(Move _move){
-		if(Character.toLowerCase(table[_move.to.row][_move.to.col]) == 'k' || moveNum == 41){
+	private boolean gameOver(char move){
+		if(move == 'W' || move == 'B' || move == '='){
 			return true;
 		}else{
 			return false;
