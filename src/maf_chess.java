@@ -186,14 +186,14 @@ public class maf_chess
 				else if (kindOfGame.equals("RB"))
 				{
 					System.out.print("Player: " + oBoard.onMove + "\npress any key for random move:");
-					input = brConsole.readLine();
+					//input = brConsole.readLine();
 					if(oBoard.onMove == 'W'){
-						System.out.println("Heuristic Player:");
-						legalMove = oBoard.move(oBoard.heuristicPlayer());
+						System.out.println("NegamaxPrune Player:");
+						legalMove = oBoard.move(oBoard.negamaxPlayer());
 						System.out.println(oBoard.toString());
 					}else{
 						System.out.println("NegamaxPrune Player:");
-						legalMove = oBoard.move(oBoard.negamaxPlayerTime());
+						legalMove = oBoard.move(oBoard.negamaxPlayer());
 						System.out.println(oBoard.toString());
 					}
 				}

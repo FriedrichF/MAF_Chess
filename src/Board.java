@@ -520,7 +520,7 @@ public class Board {
 	
 	public int negamaxPrune(Board board,int alpha, int beta, long startTime){
 		depthCounter++;
-		if((System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+		if(depthCounter >= 1000 && (System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
 			return board.getStateScore();
 		}
 		
