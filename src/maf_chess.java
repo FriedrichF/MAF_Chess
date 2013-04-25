@@ -239,10 +239,12 @@ public class maf_chess
 		char color = '?';
 		char myColor = 'W';
 		Move myMove = new Move("a2-a3");// only thats not null
+		String moveStr = "a2-a3"; //
 		Move oppMove = new Move("a2-a3");// only thats not null
 		Client connection;
 		boolean inputError = false;
 		char player = '0';
+		boolean end = false;
 
 		try {
 			connection = new Client("imcs.svcs.cs.pdx.edu", "3589","MAF_Chess", "MAF_ChessWins");
@@ -360,10 +362,10 @@ public class maf_chess
 			}
 		}
 
-		while (oppMove != null) {
+		while (!end) {
 
 			// my turn
-			do {
+			//do {
 				inputError = false;
 				try {
 					// select Player and get Move
@@ -389,31 +391,44 @@ public class maf_chess
 					}// end switch
 					connection.sendMove("! " + myMove.toString());
 				} catch (Exception e) {
-					inputError = true;
+					//inputError = true;
 				}
-			} while (inputError);
+			//} while (inputError);
 			oBoard.move(myMove);
 			System.out.println("I moved: " + oBoard.toString());
 
 			// opponents turn
 			// Get Opponents Move and take the move at local board
-			do {
+			//do {
 				inputError = false;
 				try {
-					oppMove = new Move(connection.getMove());
+					moveStr = connection.getMove();
+					if (moveStr == null) 
+						end = true;
+					else {
+						oppMove = new Move(moveStr);
+						if (oBoard.move(oppMove) != '?') {
+							System.out.println("Opponent moved: " + oBoard.toString());
+							moveStr = connection.getMove();
+							end = true;
+						} else 
+							System.out.println("Opponent moved: " + oBoard.toString());
+					}
 				} catch (Exception e) {
 					inputError = true;
 				}
-			} while (inputError);
+			//} while (inputError);
 
-			if (oppMove != null)
-				oBoard.move(oppMove);
-			System.out.println("Opponent moved: " + oBoard.toString());
 		}
 
 		System.out.println("GAME IS OVER");
+		System.out.println("I was: " + myColor);
 		System.out.println(oBoard.toString());
-
+		try {
+			connection.close();
+		} catch (Exception e) {
+			
+		}
 	}// end playIMCS
 	
 }
