@@ -549,7 +549,6 @@ public class Board {
 		}
 		
 		ArrayList<Move> alLegalMoves = board.legalMoves();
-		int score = 10000;
 		for(Move currentMove : alLegalMoves){
 			Board newBoard = new Board(board);
 			char winChar = newBoard.move(currentMove);
@@ -564,13 +563,13 @@ public class Board {
 				s = -10000;
 			}
 			
-			score = Math.min(score, s);
+			//score = Math.min(score, s);
 			
-			if(score <= beta){
-				return score;
+			if(s > beta){
+				return s;
 			}
-			if(score > alpha){
-				alpha = score;
+			if(s > alpha){
+				alpha = s;
 			}
 			
 		}

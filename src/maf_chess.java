@@ -193,7 +193,7 @@ public class maf_chess
 						System.out.println(oBoard.toString());
 					}else{
 						System.out.println("NegamaxPrune Player:");
-						legalMove = oBoard.move(oBoard.negamaxPlayerTime());
+						legalMove = oBoard.move(oBoard.negamaxPlayer());
 						System.out.println(oBoard.toString());
 					}
 				}
