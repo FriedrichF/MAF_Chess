@@ -259,8 +259,8 @@ public class maf_chess
 			System.out.println("0 - randomPlayer");
 			System.out.println("1 - heuristicPlayer");
 			System.out.println("2 - negamaxPlayer");
-			System.out.println("3 - ");
-			System.out.println("4 - ");
+			System.out.println("3 - negamaxPlayerTime ");
+			System.out.println("4 - negamaxPrunePlayer");
 			System.out.println("5 - ");
 
 			try {
@@ -281,8 +281,6 @@ public class maf_chess
 			System.out.println("Select mode:");
 			System.out.println("0 - accept a game");
 			System.out.println("1 - offer a game");
-			// BufferedReader brConsole = new BufferedReader(
-			// new InputStreamReader(System.in));
 			try {
 				inputChar = brConsole.readLine().charAt(0);
 			} catch (Exception e) {
@@ -380,8 +378,10 @@ public class maf_chess
 						myMove = oBoard.negamaxPlayer();
 						break;
 					case '3':
+						myMove = oBoard.negamaxPlayerTime();
 						break;
 					case '4':
+						myMove = oBoard.negamaxPrunePlayer();
 						break;
 					case '5':
 						break;
