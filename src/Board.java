@@ -14,6 +14,8 @@ public class Board {
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
 	private final int NEGAMAX_DEPTH = 4;
+	private final long ITERATIVE_TIMEOUT = 5;
+	int depthCounter = 0;
 	
 	public Board(){
 		char[][] table1 = {{'k','q','b','n','r'},
@@ -260,11 +262,11 @@ public class Board {
 			table[_move.to.row][_move.to.col] = table[_move.from.row][_move.from.col];
 			table[_move.from.row][_move.from.col] = '.';
 			char winner = onMove;
-//			if(onMove == 'B'){
-//				onMove = 'W';
-//			}else{
-//				onMove = 'B';
-//			}
+			if(onMove == 'B'){
+				onMove = 'W';
+			}else{
+				onMove = 'B';
+			}
 			return winner;
 		}
 		
@@ -372,7 +374,7 @@ public class Board {
 		}
 		return score;
 	}
-	
+
 	//random Player which choose a random move
 	public char randomMove()
 	{
@@ -406,16 +408,19 @@ public class Board {
 	public Move negamaxPlayer(){
 		ArrayList<Move> alLegalMoves = legalMoves();
 		ArrayList<Move> aBestMoves = new ArrayList<Move>();
-		int maxScore = -10000;
+		int maxScore = 10000;
 		
 		for(Move currentMove : alLegalMoves){
 			if(currentMove != null){
-				//currentScore = this.negamax(NEGAMAX_DEPTH, currentMove);
-				int currentScore = this.negamaxB(NEGAMAX_DEPTH);
+				Board copyBoard = new Board(this);
+				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
+					return currentMove;
+				}
+				int currentScore = negamaxB(NEGAMAX_DEPTH, copyBoard);
 				if (currentScore == maxScore)
 				{
 					aBestMoves.add(currentMove);
-				}else if (currentScore > maxScore){
+				}else if (currentScore < maxScore){
 					aBestMoves.clear();
 					aBestMoves.add(currentMove);
 					maxScore = currentScore;
@@ -426,15 +431,75 @@ public class Board {
 		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
 	}
 	
-	public int negamaxB(int depth){
-		if(depth <= 0){
-			return this.getStateScore();
+	public Move negamaxPrunePlayer(){
+		ArrayList<Move> alLegalMoves = legalMoves();
+		ArrayList<Move> aBestMoves = new ArrayList<Move>();
+		int alpha = -10000;
+		int beta = 10000;
+		
+		
+		for(Move currentMove : alLegalMoves){
+			if(currentMove != null){
+				Board copyBoard = new Board(this);
+				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
+					return currentMove;
+				}
+				int currentScore = negamaxPrune(NEGAMAX_DEPTH, copyBoard, -beta, -alpha);
+				
+				if (currentScore == alpha)
+				{
+					aBestMoves.add(currentMove);
+				}else if (currentScore > alpha)
+				{
+					alpha = currentScore;
+					aBestMoves.clear();
+					aBestMoves.add(currentMove);
+				}
+			}
+		}
+
+		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
+	}
+	
+	public Move negamaxPlayerTime(){
+		ArrayList<Move> alLegalMoves = legalMoves();
+		ArrayList<Move> aBestMoves = new ArrayList<Move>();
+		int maxScore = 10000;
+		long startTime = System.currentTimeMillis();
+		
+		for(Move currentMove : alLegalMoves){
+			if(currentMove != null){
+				Board copyBoard = new Board(this);
+				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
+					return currentMove;
+				}
+				depthCounter = 0;
+				int currentScore = negamaxB(copyBoard, startTime);
+				System.out.println("Depth: "+depthCounter);
+				if (currentScore == maxScore)
+				{
+					aBestMoves.add(currentMove);
+				}else if (currentScore < maxScore){
+					aBestMoves.clear();
+					aBestMoves.add(currentMove);
+					maxScore = currentScore;
+				}
+			}
+		}
+
+		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
+	}
+	
+	public int negamaxB(Board board, long startTime){
+		depthCounter++;
+		if((System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+			return board.getStateScore();
 		}
 		
-		ArrayList<Move> alLegalMoves = this.legalMoves();
+		ArrayList<Move> alLegalMoves = board.legalMoves();
 		int score = 10000;
 		for(Move currentMove : alLegalMoves){
-			Board newBoard = new Board(this);
+			Board newBoard = new Board(board);
 			char winChar = newBoard.move(currentMove);
 			int s = 0;
 			if(winChar == newBoard.onMove){
@@ -442,7 +507,33 @@ public class Board {
 			}else if(winChar == '='){
 				s = 0;
 			}else if(winChar == '?'){
-				s = newBoard.negamaxB(depth-1);
+				s = negamaxB(newBoard, startTime);
+			}else{
+				s = -10000;
+			}
+			//
+			score = Math.min(score, s);
+		}
+		return -score;
+	}
+	
+	public int negamaxB(int depth, Board board){
+		if(depth <= 0){
+			return board.getStateScore();
+		}
+		
+		ArrayList<Move> alLegalMoves = board.legalMoves();
+		int score = 10000;
+		for(Move currentMove : alLegalMoves){
+			Board newBoard = new Board(board);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = negamaxB(depth-1, newBoard);
 			}else{
 				s = -10000;
 			}
@@ -452,29 +543,37 @@ public class Board {
 		return -score;
 	}
 	
-	public int negamax(int depth, Move pMove){
-		Board bCopy = new Board(this);
-		char moveReturn = bCopy.move(pMove);
-		
-		if(depth <= 0 || bCopy.gameOver(moveReturn)){
-			
-			return bCopy.getStateScore();
+	public int negamaxPrune(int depth, Board board,int alpha, int beta){
+		if(depth <= 0){
+			return board.getStateScore();
 		}
 		
-		ArrayList<Move> alLegalMoves = bCopy.legalMoves();
-		int currentScore = -1000;
-		
+		ArrayList<Move> alLegalMoves = board.legalMoves();
+		int score = 10000;
 		for(Move currentMove : alLegalMoves){
-			currentScore = Math.max(currentScore, -bCopy.negamax(depth-1, currentMove));
+			Board newBoard = new Board(board);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = negamaxPrune(depth-1, newBoard, -beta, -alpha);
+			}else{
+				s = -10000;
+			}
+			
+			score = Math.min(score, s);
+			
+			if(score <= beta){
+				return score;
+			}
+			if(score > alpha){
+				alpha = score;
+			}
+			
 		}
-		return currentScore;
-	}
-	
-	private boolean gameOver(char move){
-		if(move == 'W' || move == 'B' || move == '='){
-			return true;
-		}else{
-			return false;
-		}
+		return alpha;
 	}
 }
