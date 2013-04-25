@@ -14,7 +14,7 @@ public class Board {
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
 	private final int NEGAMAX_DEPTH = 4;
-	private final long ITERATIVE_TIMEOUT = 5;
+	private final long ITERATIVE_TIMEOUT = 6;
 	int depthCounter = 0;
 	
 	public Board(){
@@ -466,6 +466,8 @@ public class Board {
 		ArrayList<Move> aBestMoves = new ArrayList<Move>();
 		int maxScore = 10000;
 		long startTime = System.currentTimeMillis();
+		int alpha = -10000;
+		int beta = 10000;
 		
 		for(Move currentMove : alLegalMoves){
 			if(currentMove != null){
@@ -474,8 +476,7 @@ public class Board {
 					return currentMove;
 				}
 				depthCounter = 0;
-				int currentScore = negamaxB(copyBoard, startTime);
-				System.out.println("Depth: "+depthCounter);
+				int currentScore = negamaxPrune(copyBoard, -beta, -alpha, startTime);
 				if (currentScore == maxScore)
 				{
 					aBestMoves.add(currentMove);
@@ -492,7 +493,7 @@ public class Board {
 	
 	public int negamaxB(Board board, long startTime){
 		depthCounter++;
-		if((System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+		if(depthCounter >= 1000 && (System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
 			return board.getStateScore();
 		}
 		
@@ -515,6 +516,40 @@ public class Board {
 			score = Math.min(score, s);
 		}
 		return -score;
+	}
+	
+	public int negamaxPrune(Board board,int alpha, int beta, long startTime){
+		depthCounter++;
+		if((System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+			return board.getStateScore();
+		}
+		
+		ArrayList<Move> alLegalMoves = board.legalMoves();
+		for(Move currentMove : alLegalMoves){
+			Board newBoard = new Board(board);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = negamaxPrune(newBoard, -beta, -alpha, startTime);
+			}else{
+				s = -10000;
+			}
+			
+			//score = Math.min(score, s);
+			
+			if(s > beta){
+				return s;
+			}
+			if(s > alpha){
+				alpha = s;
+			}
+			
+		}
+		return alpha;
 	}
 	
 	public int negamaxB(int depth, Board board){
