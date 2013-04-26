@@ -13,7 +13,7 @@ public class Board {
 	private final int CAPTURE_ONLY = 1;
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
-	private final int NEGAMAX_DEPTH = 4;
+	private final int NEGAMAX_DEPTH = 5;
 	private final long ITERATIVE_TIMEOUT = 6;
 	int depthCounter = 0;
 	
@@ -489,6 +489,74 @@ public class Board {
 		}
 
 		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
+	}
+	
+	public Move iterativePlayerTime(){
+		ArrayList<Move> alLegalMoves = legalMoves();
+		ArrayList<Move> aBestMoves = new ArrayList<Move>();
+		int maxScore = 10000;
+		long startTime = System.currentTimeMillis();
+		int d = 2;
+		int alpha = -10000;
+		int beta = 10000;
+		Move bestNegamaxMove;
+		
+		while(true){
+			for(Move currentMove : alLegalMoves){
+				if(currentMove != null){
+					Board copyBoard = new Board(this);
+					if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
+						return currentMove;
+					}
+					depthCounter++;
+					int currentScore = negamaxPrune(d, copyBoard, alpha, beta);
+					//int currentScore = negamaxBTime(d, copyBoard, startTime);
+					if (currentScore == maxScore)
+					{
+						aBestMoves.add(currentMove);
+					}else if (currentScore < maxScore){
+						aBestMoves.clear();
+						aBestMoves.add(currentMove);
+						maxScore = currentScore;
+					}
+					bestNegamaxMove = (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
+					if((System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+						System.out.println("Depth: "+ d);
+						depthCounter = 0;
+						return bestNegamaxMove;
+					}
+				}
+			}
+			
+			d++;
+		}
+	}
+	
+	public int negamaxBTime(int depth, Board board, long startTime){
+		depthCounter++;
+		if(depthCounter >= 1000 && (System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+			return board.getStateScore();
+		}
+		
+		ArrayList<Move> alLegalMoves = board.legalMoves();
+		int score = 10000;
+		for(Move currentMove : alLegalMoves){
+			Board newBoard = new Board(board);
+			char winChar = newBoard.move(currentMove);
+			int s = 0;
+			if(winChar == newBoard.onMove){
+				s = 10000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s = negamaxBTime(depth ,newBoard, startTime);
+			}else{
+				s = -10000;
+			}
+			//
+			score = Math.min(score, s);
+		}
+		return -score;
 	}
 	
 	public int negamaxB(Board board, long startTime){
