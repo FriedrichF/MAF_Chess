@@ -14,18 +14,14 @@ public class maf_chess
 	public static void test(){
 		Board b = new Board(
 				"10 B " +
-				". . . . . " +
-				". . . . . " +
-				". . r . . " +
-				". . . . . " +
-				". . q . . " +
-				". . . . .");
+				". . k . . " +
+				". . p . . " +
+				". . P . . " +
+				". . p . . " +
+				". . . . P " +
+				". . . . K");
 		ArrayList<Move> moveList = b.legalMoves();
-		for(Move move : moveList){
-			System.out.print(move.toString()+"|");
-		}
-		System.out.print("\n");
-		System.out.println(b.toString());
+		
 	}
 	
 	public static void main(String[] args) {

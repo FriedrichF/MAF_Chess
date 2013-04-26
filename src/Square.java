@@ -1,4 +1,4 @@
-/*Copyright Friedrich Fell 2013*/
+// Copyright © 2013 MAF 
 import java.util.Arrays;
 
 

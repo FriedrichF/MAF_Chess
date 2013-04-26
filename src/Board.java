@@ -1,4 +1,4 @@
-/*Copyright Friedrich Fell 2013*/
+// Copyright © 2013 MAF 
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class Board {
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
 	private final int NEGAMAX_DEPTH = 4;
-	private final long ITERATIVE_TIMEOUT = 6;
+	private final long ITERATIVE_TIMEOUT = 7;
 	int depthCounter = 0;
 	
 	public Board(){
