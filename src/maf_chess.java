@@ -188,14 +188,12 @@ public class maf_chess
 					System.out.print("Player: " + oBoard.onMove + "\npress any key for random move:");
 					//input = brConsole.readLine();
 					if(oBoard.onMove == 'W'){
-						System.out.println("NegamaxPrune Player:");
+						System.out.println("Negamax Player:");
 						legalMove = oBoard.move(oBoard.negamaxPlayer());
 						System.out.println(oBoard.toString());
 					}else{
-						System.out.println("NegamaxPrune Player:");
-						oBoard.negamaxPlayer();
-						System.out.println("-----------");
-						legalMove = oBoard.move(oBoard.negamaxPrunePlayer());
+						System.out.println("NegamaxPruneTime Player:");
+						legalMove = oBoard.move(oBoard.negamaxPruneTimePlayer());
 						System.out.println(oBoard.toString());
 					}
 				}
@@ -261,7 +259,7 @@ public class maf_chess
 			System.out.println("0 - randomPlayer");
 			System.out.println("1 - heuristicPlayer");
 			System.out.println("2 - negamaxPlayer");
-			System.out.println("3 - negamaxPlayerTime ");
+			System.out.println("3 - negamaxPruneTimePlayer ");
 			System.out.println("4 - negamaxPrunePlayer");
 			System.out.println("5 - ");
 
@@ -380,7 +378,7 @@ public class maf_chess
 						myMove = oBoard.negamaxPlayer();
 						break;
 					case '3':
-						myMove = oBoard.negamaxPlayerTime();
+						myMove = oBoard.negamaxPruneTimePlayer();
 						break;
 					case '4':
 						myMove = oBoard.negamaxPrunePlayer();

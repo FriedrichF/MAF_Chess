@@ -13,7 +13,7 @@ public class Board {
 	private final int CAPTURE_ONLY = 1;
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
-	private final int NEGAMAX_DEPTH = 5;
+	private final int NEGAMAX_DEPTH = 4;
 	private final long ITERATIVE_TIMEOUT = 6;
 	int depthCounter = 0;
 	
@@ -416,8 +416,7 @@ public class Board {
 				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
 					return currentMove;
 				}
-				int currentScore = negamaxB(NEGAMAX_DEPTH, copyBoard);
-				System.out.println(currentScore);
+				int currentScore = negamax(NEGAMAX_DEPTH, copyBoard);
 				if (currentScore == maxScore)
 				{
 					aBestMoves.add(currentMove);
@@ -447,7 +446,7 @@ public class Board {
 					return currentMove;
 				}
 				int currentScore = - negamaxPrune(NEGAMAX_DEPTH, copyBoard, -beta, -alpha);
-				System.out.println(currentScore);
+				//System.out.println(currentScore);
 				if (currentScore == highScore)
 				{
 					aBestMoves.add(currentMove);
@@ -464,42 +463,12 @@ public class Board {
 		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
 	}
 	
-	public Move negamaxPlayerTime(){
+	public Move negamaxPruneTimePlayer(){
 		ArrayList<Move> alLegalMoves = legalMoves();
 		ArrayList<Move> aBestMoves = new ArrayList<Move>();
 		int maxScore = 10000;
 		long startTime = System.currentTimeMillis();
-		int alpha = -10000;
-		int beta = 10000;
-		
-		for(Move currentMove : alLegalMoves){
-			if(currentMove != null){
-				Board copyBoard = new Board(this);
-				if(copyBoard.move(currentMove) == this.onMove){	//Win!!!
-					return currentMove;
-				}
-				depthCounter = 0;
-				int currentScore = negamaxPrune(copyBoard, -beta, -alpha, startTime);
-				if (currentScore == maxScore)
-				{
-					aBestMoves.add(currentMove);
-				}else if (currentScore < maxScore){
-					aBestMoves.clear();
-					aBestMoves.add(currentMove);
-					maxScore = currentScore;
-				}
-			}
-		}
-
-		return (Move) aBestMoves.get((int)Math.floor(Math.random() * aBestMoves.size()));
-	}
-	
-	public Move iterativePlayerTime(){
-		ArrayList<Move> alLegalMoves = legalMoves();
-		ArrayList<Move> aBestMoves = new ArrayList<Move>();
-		int maxScore = 10000;
-		long startTime = System.currentTimeMillis();
-		int d = 2;
+		int d = 4;
 		int alpha = -10000;
 		int beta = 10000;
 		Move bestNegamaxMove;
@@ -512,8 +481,7 @@ public class Board {
 						return currentMove;
 					}
 					depthCounter++;
-					int currentScore = negamaxPrune(d, copyBoard, alpha, beta);
-					//int currentScore = negamaxBTime(d, copyBoard, startTime);
+					int currentScore = negamaxPruneTime(d, copyBoard, alpha, beta, startTime);
 					if (currentScore == maxScore)
 					{
 						aBestMoves.add(currentMove);
@@ -535,95 +503,57 @@ public class Board {
 		}
 	}
 	
-	public int negamaxBTime(int depth, Board board, long startTime){
+	public int negamaxPruneTime(int depth, Board board, int alpha, int beta, long startTime){
 		depthCounter++;
 		if(depthCounter >= 1000 && (System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
 			return board.getStateScore();
 		}
 		
-		ArrayList<Move> alLegalMoves = board.legalMoves();
-		int score = 10000;
-		for(Move currentMove : alLegalMoves){
-			Board newBoard = new Board(board);
-			char winChar = newBoard.move(currentMove);
-			int s = 0;
-			if(winChar == newBoard.onMove){
-				s = 10000;
-			}else if(winChar == '='){
-				s = 0;
-			}else if(winChar == '?'){
-				s = negamaxBTime(depth ,newBoard, startTime);
-			}else{
-				s = -10000;
-			}
-			//
-			score = Math.min(score, s);
-		}
-		return -score;
-	}
-	
-	public int negamaxB(Board board, long startTime){
-		depthCounter++;
-		if(depthCounter >= 1000 && (System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
+		if(depth <= 0){
 			return board.getStateScore();
 		}
-		
-		ArrayList<Move> alLegalMoves = board.legalMoves();
-		int score = 10000;
-		for(Move currentMove : alLegalMoves){
-			Board newBoard = new Board(board);
-			char winChar = newBoard.move(currentMove);
-			int s = 0;
-			if(winChar == newBoard.onMove){
-				s = 10000;
-			}else if(winChar == '='){
-				s = 0;
-			}else if(winChar == '?'){
-				s = negamaxB(newBoard, startTime);
-			}else{
-				s = -10000;
-			}
-			//
-			score = Math.min(score, s);
-		}
-		return -score;
-	}
-	
-	public int negamaxPrune(Board board,int alpha, int beta, long startTime){
-		depthCounter++;
-		if(depthCounter >= 1000 && (System.currentTimeMillis() - startTime) >= ((long)(ITERATIVE_TIMEOUT * 1000))){
-			return board.getStateScore();
-		}
+		int alpha2 = alpha;
+		int s = -10000;
+		boolean isEqual = false;
 		
 		ArrayList<Move> alLegalMoves = board.legalMoves();
 		for(Move currentMove : alLegalMoves){
 			Board newBoard = new Board(board);
 			char winChar = newBoard.move(currentMove);
-			int s = 0;
-			if(winChar == newBoard.onMove){
-				s = 10000;
-			}else if(winChar == '='){
-				s = 0;
-			}else if(winChar == '?'){
-				s = negamaxPrune(newBoard, -beta, -alpha, startTime);
-			}else{
-				s = -10000;
-			}
 			
-			//score = Math.min(score, s);
-			
-			if(s > beta){
+			if(winChar == newBoard.onMove){
+				s = - 1000;
+			}else if(winChar == '='){
+				s = 0;
+			}else if(winChar == '?'){
+				s =  (- negamaxPruneTime(depth-1, newBoard, -beta, -alpha, startTime));
+			}else{
+				s = 1000;
+			}
+					
+			if(s >= beta){
 				return s;
+			}
+			if (s == alpha) {
+				isEqual = true;
 			}
 			if(s > alpha){
 				alpha = s;
+				isEqual = false;
 			}
 			
+			
 		}
-		return alpha;
+		
+		if (alpha2 < alpha)
+			return alpha;
+		else if (alpha2 == alpha && isEqual)
+			return alpha;
+		else 
+			return -10000;
 	}
-	
-	public int negamaxB(int depth, Board board){
+		
+	public int negamax(int depth, Board board){
 		if(depth <= 0){
 			return board.getStateScore();
 		}
@@ -639,7 +569,7 @@ public class Board {
 			}else if(winChar == '='){
 				s = 0;
 			}else if(winChar == '?'){
-				s = negamaxB(depth-1, newBoard);
+				s = negamax(depth-1, newBoard);
 			}else{
 				s = -10000;
 			}
@@ -692,10 +622,5 @@ public class Board {
 			return alpha;
 		else 
 			return -10000;
-
-		/*if (alpha2 == alpha)
-			if (s < alpha2)
-				return -10000;
-		return alpha;*/
 	}
 }
