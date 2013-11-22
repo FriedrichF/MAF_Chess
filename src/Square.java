@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class Square {
 	public int col;
 	public int row;
-	private final static char[] chars = {'a','b','c','d','e'};
+	private final static char[] chars = {'a','b','c','d','e','f','g','h'};
 	
 	//String Example c4
 	public Square(String inputMove) throws Exception{
@@ -30,7 +30,7 @@ public class Square {
 	}
 	
 	public String toString(){
-		int column = 7-Integer.parseInt(""+row);
+		int column = 8-Integer.parseInt(""+row);
 		return ""+chars[col]+column;
 	}
 }
