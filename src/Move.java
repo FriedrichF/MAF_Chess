@@ -14,7 +14,7 @@ public class Move {
 				throw new Exception("String not long enough!");
 			}
 		}catch(Exception e){
-			System.out.println(e);
+			System.out.println( e);
 		}
 	}
 	

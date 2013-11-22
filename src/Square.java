@@ -12,8 +12,8 @@ public class Square {
 		if(inputMove.length() == 2){
 			try{
 				col = Arrays.binarySearch(chars, inputMove.charAt(0));
-				row = 6 - Integer.parseInt((""+inputMove.charAt(1)));
-				if(col < 0 | col > 5 | row < 0 | row > 6){
+				row = 8 - Integer.parseInt((""+inputMove.charAt(1)));
+				if(col < 0 | col > 8 | row < 0 | row > 8){
 					throw new Exception();
 				}
 			}catch(Exception e){
@@ -30,7 +30,7 @@ public class Square {
 	}
 	
 	public String toString(){
-		int column = 6-Integer.parseInt(""+row);
+		int column = 7-Integer.parseInt(""+row);
 		return ""+chars[col]+column;
 	}
 }

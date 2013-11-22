@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class Board {
 	int moveNum;
 	char onMove;
-	char[][] table = new char[6][5];
+	char[][] table = new char[8][8];
 	private final int CAPTURE_ONLY = 1;
 	private final int NO_CAPTURE = 2;
 	private final int ALL_CAPTURE = 0;
@@ -18,12 +18,16 @@ public class Board {
 	int depthCounter = 0;
 	
 	public Board(){
-		char[][] table1 = {{'k','q','b','n','r'},
-				{'p','p','p','p','p'},
-				{'.','.','.','.','.'},
-				{'.','.','.','.','.'},
-				{'P','P','P','P','P'},
-				{'R','N','B','Q','K'}};
+		char[][] table1 = {
+				{'r','n','b','k','q','b','n','r'},
+				{'p','p','p','p','p','p','p','p'},
+				{'.','.','.','.','.','.','.','.'},
+				{'.','.','.','.','.','.','.','.'},
+				{'.','.','.','.','.','.','.','.'},
+				{'.','.','.','.','.','.','.','.'},
+				{'P','P','P','P','P','P','P','P'},
+				{'R','N','B','Q','K','B','N','R'}};
+		
 		table = table1;
 		
 		moveNum = 1;
@@ -156,12 +160,8 @@ public class Board {
 							break;
 						case 'b':	
 							addScan(moves, new Square(x, i), -1, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(x, i), -1, 0, true, NO_CAPTURE);
 							addScan(moves, new Square(x, i), -1, 1, false, ALL_CAPTURE);
-							addScan(moves, new Square(x, i), 0, -1, true, NO_CAPTURE);
-							addScan(moves, new Square(x, i), 0, 1, true, NO_CAPTURE);
 							addScan(moves, new Square(x, i), 1, -1, false, ALL_CAPTURE);
-							addScan(moves, new Square(x, i), 1, 0, true, NO_CAPTURE);
 							addScan(moves, new Square(x, i), 1, 1, false, ALL_CAPTURE);
 							break;
 						case 'n':	
@@ -209,8 +209,8 @@ public class Board {
 		boolean run = true; // Stop after first Step if oneStep is set
 		try {
 			// generate the Move
-			while ((0 <= (start.col + (i * dc)) && (start.col + (i * dc)) < 5)
-					&& (0 <= (start.row + (i * dr)) && (start.row + (i * dr)) < 6)
+			while ((0 <= (start.col + (i * dc)) && (start.col + (i * dc)) < 8)
+					&& (0 <= (start.row + (i * dr)) && (start.row + (i * dr)) < 8)
 					&& run) {
 				next = new Square((start.col + (dc * i)), (start.row + (dr * i)));
 				//System.out.println(next.toString());
@@ -270,7 +270,7 @@ public class Board {
 			return winner;
 		}
 		
-		if((_move.to.row == 5 || _move.to.row == 0) && Character.toLowerCase(table[_move.from.row][_move.from.col]) == 'p'){
+		if((_move.to.row == 8 || _move.to.row == 0) && Character.toLowerCase(table[_move.from.row][_move.from.col]) == 'p'){
 			if(Character.isLowerCase(table[_move.from.row][_move.from.col])){
 				table[_move.to.row][_move.to.col] = 'q';
 			}else{
